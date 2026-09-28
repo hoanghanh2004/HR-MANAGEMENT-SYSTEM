@@ -1,0 +1,38 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.loading-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+/* Đối với Chrome, Safari và các trình duyệt Webkit */
+::-webkit-scrollbar {
+    width: 12px; /* Độ rộng của thanh cuộn */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #55c6d2; /* Màu cho phần cuộn */
+    border-radius: 2px; /* Bo tròn các góc */
+    transition: background-color 0.3s ease; /* Hiệu ứng chuyển màu */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #55c6d2; /* Màu khi hover */
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1); /* Màu cho track (đường đi) */
+    border-radius: 2px; /* Bo tròn các góc track */
+}
+
+/* Đối với Firefox */
+.scrollable {
+    scrollbar-width: thin; /* Độ rộng của thanh cuộn */
+    scrollbar-color: #61dafb rgba(0, 0, 0, 0.1); /* Màu cho phần cuộn và track */
+}

@@ -1,0 +1,344 @@
+.container {
+    width: 1200px;
+    margin: 0 auto;
+}
+.topnav {
+    overflow        : hidden;
+    background-color: #333;
+}
+
+.topnav a {
+    float          : left;
+    color          : #f2f2f2;
+    text-align     : center;
+    padding        : 14px 16px;
+    text-decoration: none;
+    font-size      : 17px;
+}
+
+.topnav a:hover {
+    background-color: #ddd;
+    color           : black;
+}
+
+.topnav a.active {
+    background-color: #04AA6D;
+    color           : white;
+}
+.img {
+    justify-content: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.img img {
+    width: 500px;
+    height: 300px;
+}
+.title {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+    font-size: 50px;
+}
+.container-video {
+    width: 100%;
+    height: 700px;
+}
+.container-video video {
+    width: 100%;
+    height: 700px;
+}
+.scroll-to-top {
+    position: fixed; 
+    bottom: 30px; 
+    right: 25px;
+    border-radius: 20px;
+}
+.update-user-container {
+    padding   : 15px;
+    text-align: center;
+}
+
+.update-user-container label {
+    display: block;
+}
+
+.btn-save {
+    margin-top: 15px;
+    cursor    : pointer;
+}
+
+.upload-file-container {
+    margin-top: 50px;
+    padding: 15px;
+}
+
+.upload-file-container label {
+    display: block;
+}
+
+hr {
+    border-top: 3px solid #eee !important;
+}
+
+/* General styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Top navigation */
+  .topnav {
+    background-color: #333;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .topnav a {
+    color: #f2f2f2;
+    padding: 14px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.3s ease;
+  }
+  
+  .topnav a:hover {
+    background-color: #ddd;
+    color: black;
+  }
+  
+  .topnav a.active {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  /* Page content styles */
+  .upload-file-container {
+    padding: 50px;
+    max-width: 800px;
+    margin: 50 auto;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .upload-file-container h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 32px;
+  }
+  
+  .upload-file-container h3 {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .upload-file-container span {
+    font-size: 16px;
+    color: #555;
+  }
+  
+  .upload-file-container input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .upload-file-container input[type="file"]:hover {
+    border-color: #4CAF50;
+  }
+  
+  .upload-file-container .btn-save {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 14px 20px;
+    font-size: 18px;
+    width: 100%;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .upload-file-container .btn-save:hover {
+    background-color: #45a049;
+  }
+  
+  hr {
+    border: 0;
+    border-top: 1px solid #ddd;
+    margin: 30px 0;
+  }
+  .attention {
+    color: red !important;
+  }
+  /* Responsive styles */
+  @media (max-width: 768px) {
+    .upload-file-container {
+      padding: 20px;
+    }
+  
+    .upload-file-container h1 {
+      font-size: 28px;
+    }
+  
+    .upload-file-container h3 {
+      font-size: 20px;
+    }
+  
+    .upload-file-container input[type="file"],
+    .upload-file-container .btn-save {
+      font-size: 14px;
+    }
+    .attention {
+        color: red;
+      }
+  }
+  /* Container */
+.container {
+    margin-top: 20px;
+}
+
+/* Tạo người dùng */
+.user-infor-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.user-infor-container h3 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.form-label {
+    font-weight: bold;
+    color: #333;
+}
+
+.form-control {
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    font-size: 16px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.mt-3 {
+    margin-top: 20px;
+}
+
+/* Table */
+.table-users {
+    margin-top: 40px;
+}
+
+.table-users h3 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th, .table td {
+    padding: 12px;
+    text-align: left;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+.table-bordered {
+    border: 1px solid #ccc;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.table td {
+    background-color: #fff;
+    color: #555;
+}
+
+.table .btn {
+    padding: 6px 12px;
+    border-radius: 5px;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    border: none;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border: none;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+/* No users message */
+.table-users .no-users {
+    text-align: center;
+    font-size: 18px;
+    color: #888;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .user-infor-container {
+        padding: 15px;
+    }
+
+    .form-control {
+        padding: 8px;
+    }
+
+    .table th, .table td {
+        padding: 8px;
+    }
+
+    .table .btn {
+        padding: 4px 8px;
+    }
+}

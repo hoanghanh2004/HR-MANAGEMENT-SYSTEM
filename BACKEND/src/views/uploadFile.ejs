@@ -1,0 +1,42 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node.JS Basic</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
+
+<body>
+    <div class="topnav">
+        <a href="/">Home</a>
+        <a href="/user">User</a>
+        <a href="/upload" class="active">Upload file</a>
+    </div>
+
+    <div class="upload-file-container">
+        <h1>Trang UpLoad Và Lưu Trữ File Ảnh</h1>
+        <form method="POST" action="/upload-profile-pic" enctype="multipart/form-data">
+            <div>
+                <h3>Tải lên file có định dạng ảnh:</h3>
+                <div>
+                    <span class="attention"><strong>Lưu ý:</strong> Nếu bạn không chọn file có đúng <strong> Định Dạng
+                            Ảnh</strong> như ( jpg, JPG, jpeg, JPEG, png, PNG, gif, GIF), những file khác Ảnh sẽ bị
+                        chương trình kiểm tra và cần phải upload lại:</span>
+                    <input type="file" name="profile_pic" />
+                </div>
+            </div>
+
+            <div>
+                <button class="btn-save" type="submit">Tải lên</button>
+            </div>
+        </form>
+
+        <hr />
+    </div>
+
+</body>
+
+</html>

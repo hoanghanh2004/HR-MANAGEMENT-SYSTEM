@@ -1,0 +1,22 @@
+.role-parent {
+    .actions {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        .btn-add {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            flex-direction: column;
+            font-size: 25px;
+            margin-top: 5px;
+            cursor: pointer;
+            color: #1aa5cc;
+        }
+        .btn-trash{
+            cursor: pointer;
+            color: red;
+            font-size: 21px;
+        }
+    }
+}

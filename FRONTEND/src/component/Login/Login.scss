@@ -1,0 +1,56 @@
+.red {
+    border: 1px solid red;
+}
+
+.yellow {
+    border: 1px solid yellow;
+}
+.login-container {
+    background-color: #f0f2f5;
+    min-height: 100vh;
+    padding-top: 20px;
+    .content-left {
+        margin-top: 50px;
+        .brand {
+            text-transform: uppercase;
+            color: #1877f2;
+            font-size: 30px;
+        }
+        .detail {
+            font-size: 20px;
+            text-transform: capitalize;
+        }
+    }
+    .content-right {
+        border-radius: 8px;
+        background-color: #fff;
+        height: 450px;
+        width: 530px;
+        margin-top: 30px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+        box-sizing: border-box;
+        .brand {
+            text-transform: uppercase;
+            color: #1877f2;
+            font-size: 20px;
+            text-align: center;
+        }
+        .forgot-pass {
+            text-decoration: none;
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+        .btn-success:focus {
+            outline: none;
+            box-shadow: none;
+        }
+    }
+}
+
+.back-arrow {
+    font-size: 20px;
+}
+.no-underline {
+    text-decoration: none;
+}

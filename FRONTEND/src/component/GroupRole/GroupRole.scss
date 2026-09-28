@@ -1,0 +1,21 @@
+.group-role-container {
+    margin-bottom: 700px;
+    .red {
+        color: red;
+    }
+}
+select.form-select-sm option {
+    font-size: 16px; /* Kích thước chữ mặc định */
+}
+
+@media (max-width: 768px) {
+    select.form-select-sm option {
+        font-size: 11px; /* Giảm kích thước chữ khi màn hình nhỏ hơn 768px */
+    }
+}
+
+@media (max-width: 576px) {
+    select.form-select-sm option {
+        font-size: 9px; /* Giảm kích thước chữ hơn nữa khi màn hình nhỏ hơn 576px */
+    }
+}

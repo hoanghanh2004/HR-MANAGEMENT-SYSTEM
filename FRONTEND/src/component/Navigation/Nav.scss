@@ -1,0 +1,71 @@
+.nav-header {
+    .nav-right{
+        margin-right: 25px;
+    }
+    padding-bottom: 0.5rem;
+    .nav-bar {
+        padding-bottom: 0 !important;
+    }
+    .bg-header {
+        background-color: #20232a;
+    }
+    .navbar-brand {
+        color: #61dafb !important;
+        font-weight: bold !important;
+    }
+    a,
+    .navbar-nav {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+    .nav-link {
+        color: white !important;
+        &:hover {
+            color: #61dafb !important;
+            cursor: pointer;
+        }
+    }
+    .nav-link {
+       
+        &.active {
+            color: #61dafb !important;
+        }
+    }
+    .dropdown-menu {
+        position: absolute;
+        left: 0; /* Căn chỉnh dropdown với bên phải */
+        a {
+            color: #212529 !important;
+        }
+    }
+
+}
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.nav-header {
+    .brand-name {
+        font-weight: bold;
+        font-size: 24px;
+    }
+
+    img {
+        height: 40px;
+        width: 40px;
+        animation: spin infinite 4s linear; 
+        margin-right: 10px;
+    }
+}
+
+.log-out {
+    display: block;
+    color: red;
+    font-weight: bold;
+}
