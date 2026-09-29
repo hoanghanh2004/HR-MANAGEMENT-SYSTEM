@@ -3,10 +3,11 @@ import './Login.scss';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { loginUser } from '../../services/userService';
-import imglogo from '../../assets/images/reactred.png';
 import { UserContext } from '../../context/UserContext';
 import { GiReturnArrow } from 'react-icons/gi';
+import { FaUsers } from 'react-icons/fa6';
 import { Link } from 'react-router-dom/cjs/react-router-dom.min';
+
 const Login = (props) => {
     const { user, loginContext } = useContext(UserContext);
     let history = useHistory();
@@ -53,7 +54,7 @@ const Login = (props) => {
                 isAuthenticated: true,
                 token,
                 account: { groupWithRoles, email, username },
-            }; 
+            };
             localStorage.setItem('jwt', token);
             loginContext(data);
             history.push('/users');
@@ -76,61 +77,83 @@ const Login = (props) => {
     // }, user);
     return (
         <div className="login-container">
-            <div className="container">
-                <div className="row d-flex justify-content-center px-3">
-                    <div className="content-left col-7 d-none d-xxl-block">
-                        <div className="brand">
-                            <h3>Ứng Dụng Quản Lý Và Phân Quyền Người Dùng!</h3>
-                        </div>
-                        <div className="detail">
-                            <img src={imglogo} alt="" />
+            <main className="login-layout">
+                <section className="login-brand-panel" aria-label="Giới thiệu hệ thống">
+                    <div className="login-brand-lockup">
+                        <span className="login-brand-icon" aria-hidden="true">
+                            <FaUsers />
+                        </span>
+                        <div>
+                            <p className="login-brand-kicker">HR MANAGEMENT</p>
+                            <h1>Hệ thống quản lý nhân sự</h1>
                         </div>
                     </div>
-                    <div className="content-right col-5 col-xl-12 d-flex flex-column gap-3 py-3">
-                        <div className="brand d-xxl-none">
-                            <h1></h1>
+                    <div className="login-brand-copy">
+                        <p>Quản lý nhân sự và phân quyền người dùng</p>
+                        <span>Một không gian làm việc thống nhất cho đội ngũ của bạn.</span>
+                    </div>
+                    <div className="login-brand-footer">
+                        <span className="login-status-dot" aria-hidden="true" />
+                        <span>Cổng thông tin nội bộ</span>
+                    </div>
+                </section>
+
+                <section className="login-form-panel" aria-labelledby="login-heading">
+                    <div className="login-form-content">
+                        <div className="login-form-heading">
+                            <p className="login-eyebrow">Chào mừng trở lại</p>
+                            <h2 id="login-heading">Đăng nhập</h2>
+                            <p>Đăng nhập để tiếp tục vào hệ thống</p>
                         </div>
-                        <input
-                            ref={valueLoginRef}
-                            type="text"
-                            placeholder="Email address or phone number"
-                            className={objValidInput.isValidValueLogin ? 'form-control' : 'form-control is-invalid'}
-                            value={valueLogin}
-                            onKeyDown={(e) => handleKeyDown(e, passwordRef)}
-                            onChange={(event) => setValueLogin(event.target.value)}
-                        />
-                        <input
-                            ref={passwordRef}
-                            type="password"
-                            placeholder="Password"
-                            className={objValidInput.isValidPassword ? 'form-control' : 'form-control is-invalid'}
-                            value={password}
-                            onChange={(event) => setPassword(event.target.value)}
-                            onKeyDown={(event) => handlePressEnter(event)}
-                        />
-                        <button className="btn btn-primary" onClick={() => handleLogin()}>
-                            Login
-                        </button>
-                        <span className="text-center">
-                            <a className="forgot-pass" href="https">
-                                Forgot your password?
-                            </a>
-                        </span>
-                        <hr />
-                        <div className="text-center">
-                            <button className="btn btn-success" onClick={() => handleCreateNewAccount()}>
-                                Create new account
-                            </button>
-                            <div className="return mt-4">
-                                <Link to="/" className="no-underline">
-                                    <GiReturnArrow className="back-arrow" />
-                                    <h5 className="return-home">Return to HomePage</h5>
-                                </Link>
+                        <div className="login-fields">
+                            <div className="login-field">
+                                <label htmlFor="login-identifier">Email hoặc số điện thoại</label>
+                                <input
+                                    id="login-identifier"
+                                    ref={valueLoginRef}
+                                    type="text"
+                                    placeholder="Nhập email hoặc số điện thoại"
+                                    className={objValidInput.isValidValueLogin ? 'form-control' : 'form-control is-invalid'}
+                                    value={valueLogin}
+                                    onKeyDown={(e) => handleKeyDown(e, passwordRef)}
+                                    onChange={(event) => setValueLogin(event.target.value)}
+                                />
+                            </div>
+                            <div className="login-field">
+                                <label htmlFor="login-password">Mật khẩu</label>
+                                <input
+                                    id="login-password"
+                                    ref={passwordRef}
+                                    type="password"
+                                    placeholder="Nhập mật khẩu"
+                                    className={objValidInput.isValidPassword ? 'form-control' : 'form-control is-invalid'}
+                                    value={password}
+                                    onChange={(event) => setPassword(event.target.value)}
+                                    onKeyDown={(event) => handlePressEnter(event)}
+                                />
                             </div>
                         </div>
+                        <button className="login-submit" onClick={() => handleLogin()}>
+                            Đăng nhập
+                        </button>
+                        <div className="login-form-links">
+                            <a className="forgot-pass" href="https">
+                                Quên mật khẩu?
+                            </a>
+                        </div>
+                        <div className="login-register">
+                            <span>Chưa có tài khoản?</span>
+                            <button className="register-link" onClick={() => handleCreateNewAccount()}>
+                                Tạo tài khoản mới
+                            </button>
+                        </div>
+                        <Link to="/" className="login-home-link">
+                            <GiReturnArrow aria-hidden="true" />
+                            <span>Trở về trang chủ</span>
+                        </Link>
                     </div>
-                </div>
-            </div>
+                </section>
+            </main>
         </div>
     );
 };
