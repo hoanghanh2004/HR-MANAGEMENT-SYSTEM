@@ -1,16 +1,14 @@
 import './Register.scss';
 import { registerNewUser } from '../../services/userService';
 import { useHistory } from 'react-router-dom';
-import { useEffect, useState, useRef, useContext } from 'react';
+import { useState, useRef } from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import imglogo from '../../assets/images/reactred.png';
-// import { UserContext } from '../../context/UserContext';
 import { Link } from 'react-router-dom';
 import { GiReturnArrow } from 'react-icons/gi';
+import { FaUsers } from 'react-icons/fa6';
 
 const Register = (props) => {
-    // const { user, loginContext } = UserContext(UserContext);
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [username, setUsername] = useState('');
@@ -34,12 +32,6 @@ const Register = (props) => {
     const handleLogin = () => {
         history.push('/login');
     };
-
-    // useEffect(() => {
-    //     // axios.get('http://localhost:6969/api/v1/test-api').then((data) => {
-    //     //     console.log('>>>>>>>>>>>>>>>>>>>Check Data', data);
-    //     // });
-    // }, []);
 
     const isValidInputs = () => {
         setObjCheckInput(defaultValidInput);
@@ -102,107 +94,130 @@ const Register = (props) => {
             handleRegister();
         }
     };
-    // useEffect(() => {
-    //     if (user && user.isAuthenticated) {
-    //         history.push('/');
-    //     }
-    // }, [user]);
+
     return (
         <div className="register-container">
-            <div className="container">
-                <div className="row px-3 px-sm-0">
-                    <div className="content-left d-none col-xl-7 d-xl-block">
-                        <div className="brand">
-                            <h3>Ứng Dụng Quản Lý Và Phân Quyền Người Dùng!</h3>
-                        </div>
-                        <div className="detail">
-                            <img src={imglogo} alt="" />
-                            <h3>Hoang Hanh</h3>
+            <main className="register-layout">
+                <section className="register-brand-panel" aria-label="Giới thiệu hệ thống">
+                    <div className="register-brand-lockup">
+                        <span className="register-brand-icon" aria-hidden="true">
+                            <FaUsers />
+                        </span>
+                        <div>
+                            <p className="register-brand-kicker">HR MANAGEMENT</p>
+                            <h1>Hệ thống quản lý nhân sự</h1>
                         </div>
                     </div>
-                    <div className="content-right col-12 col-xl-5 d-flex flex-column gap-3 py-3">
-                        <div className="brand d-sm-none">
-                            <h3>Ứng Dụng Quản Lý Và Phân Quyền Người Dùng!</h3>
+                    <div className="register-brand-copy">
+                        <p>Tạo tài khoản để bắt đầu công việc</p>
+                        <span>Quản lý nhân sự và phân quyền người dùng.</span>
+                    </div>
+                    <div className="register-brand-footer">
+                        <span className="register-status-dot" aria-hidden="true" />
+                        <span>Cổng thông tin nội bộ</span>
+                    </div>
+                </section>
+
+                <section className="register-form-panel" aria-labelledby="register-heading">
+                    <div className="register-form-content">
+                        <div className="register-form-heading">
+                            <p className="register-eyebrow">Khởi tạo tài khoản</p>
+                            <h2 id="register-heading">Tạo tài khoản</h2>
+                            <p>Đăng ký tài khoản để bắt đầu sử dụng hệ thống.</p>
                         </div>
-                        <div className="form-group">
-                            <label>Email</label>
-                            <input
-                                type="text"
-                                placeholder="Email address"
-                                value={email}
-                                onChange={(event) => setEmail(event.target.value)}
-                                className={objCheckInput.isValidEmail ? 'form-control' : 'form-control is-invalid'}
-                                onKeyDown={(event) => handleNextEnter(event, phoneRef)}
-                                ref={emailRef}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Phone Number</label>
-                            <input
-                                type="text"
-                                placeholder="Phone number"
-                                value={phone}
-                                onChange={(event) => setPhone(event.target.value)}
-                                className={objCheckInput.isValidPhone ? 'form-control' : 'form-control is-invalid'}
-                                onKeyDown={(event) => handleNextEnter(event, usernameRef)}
-                                ref={phoneRef}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>User Name</label>
-                            <input
-                                type="text"
-                                placeholder="User Name"
-                                value={username}
-                                onChange={(event) => setUsername(event.target.value)}
-                                className="form-control"
-                                onKeyDown={(event) => handleNextEnter(event, passwordRef)}
-                                ref={usernameRef}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Password</label>
-                            <input
-                                type="password"
-                                placeholder="Password"
-                                value={password}
-                                onChange={(event) => setPassword(event.target.value)}
-                                className={objCheckInput.isValidPassword ? 'form-control' : 'form-control is-invalid'}
-                                onKeyDown={(event) => handleNextEnter(event, confirmPasswordRef)}
-                                ref={passwordRef}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Re-enter Password</label>
-                            <input
-                                type="password"
-                                placeholder="Re-enter password"
-                                value={comfirmPassword}
-                                onChange={(event) => setComfirmPassword(event.target.value)}
-                                className={
-                                    objCheckInput.isValidComfirmPassword ? 'form-control' : 'form-control is-invalid'
-                                }
-                                onKeyDown={(event) => handleEnterRegister(event)}
-                            />
-                        </div>
-                        <button className="btn btn-primary" onClick={() => handleRegister()}>
-                            Register
-                        </button>
-                        <hr />
-                        <div className="text-center">
-                            <button className="btn btn-success" onClick={() => handleLogin()}>
-                                Already have an account? Login
-                            </button>
-                            <div className="return mt-4">
-                                <Link to="/" className="no-underline">
-                                    <GiReturnArrow className="back-arrow" />
-                                    <h5 className="return-home">Return to HomePage</h5>
-                                </Link>
+
+                        <div className="register-fields">
+                            <div className="register-field">
+                                <label htmlFor="register-email">Email</label>
+                                <input
+                                    id="register-email"
+                                    type="text"
+                                    placeholder="Nhập địa chỉ email"
+                                    value={email}
+                                    onChange={(event) => setEmail(event.target.value)}
+                                    className={objCheckInput.isValidEmail ? 'form-control' : 'form-control is-invalid'}
+                                    onKeyDown={(event) => handleNextEnter(event, phoneRef)}
+                                    ref={emailRef}
+                                />
+                            </div>
+
+                            <div className="register-field">
+                                <label htmlFor="register-phone">Số điện thoại</label>
+                                <input
+                                    id="register-phone"
+                                    type="text"
+                                    placeholder="Nhập số điện thoại"
+                                    value={phone}
+                                    onChange={(event) => setPhone(event.target.value)}
+                                    className={objCheckInput.isValidPhone ? 'form-control' : 'form-control is-invalid'}
+                                    onKeyDown={(event) => handleNextEnter(event, usernameRef)}
+                                    ref={phoneRef}
+                                />
+                            </div>
+
+                            <div className="register-field">
+                                <label htmlFor="register-username">Tên người dùng</label>
+                                <input
+                                    id="register-username"
+                                    type="text"
+                                    placeholder="Nhập tên người dùng"
+                                    value={username}
+                                    onChange={(event) => setUsername(event.target.value)}
+                                    className="form-control"
+                                    onKeyDown={(event) => handleNextEnter(event, passwordRef)}
+                                    ref={usernameRef}
+                                />
+                            </div>
+
+                            <div className="register-field">
+                                <label htmlFor="register-password">Mật khẩu</label>
+                                <input
+                                    id="register-password"
+                                    type="password"
+                                    placeholder="Nhập mật khẩu"
+                                    value={password}
+                                    onChange={(event) => setPassword(event.target.value)}
+                                    className={objCheckInput.isValidPassword ? 'form-control' : 'form-control is-invalid'}
+                                    onKeyDown={(event) => handleNextEnter(event, confirmPasswordRef)}
+                                    ref={passwordRef}
+                                />
+                            </div>
+
+                            <div className="register-field">
+                                <label htmlFor="register-confirm-password">Xác nhận mật khẩu</label>
+                                <input
+                                    id="register-confirm-password"
+                                    type="password"
+                                    placeholder="Nhập lại mật khẩu"
+                                    value={comfirmPassword}
+                                    onChange={(event) => setComfirmPassword(event.target.value)}
+                                    className={
+                                        objCheckInput.isValidComfirmPassword ? 'form-control' : 'form-control is-invalid'
+                                    }
+                                    onKeyDown={(event) => handleEnterRegister(event)}
+                                    ref={confirmPasswordRef}
+                                />
                             </div>
                         </div>
+
+                        <button className="register-submit" onClick={() => handleRegister()}>
+                            Đăng ký
+                        </button>
+
+                        <div className="register-login">
+                            <span>Đã có tài khoản?</span>
+                            <button className="login-link" onClick={() => handleLogin()}>
+                                Đăng nhập
+                            </button>
+                        </div>
+
+                        <Link to="/" className="register-home-link">
+                            <GiReturnArrow aria-hidden="true" />
+                            <span>Trở về trang chủ</span>
+                        </Link>
                     </div>
-                </div>
-            </div>
+                </section>
+            </main>
         </div>
     );
 };
