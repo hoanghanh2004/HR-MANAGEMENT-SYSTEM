@@ -84,7 +84,7 @@ const Login = (props) => {
                             <FaUsers />
                         </span>
                         <div>
-                            <p className="login-brand-kicker">HR MANAGEMENT</p>
+                            <p className="login-brand-kicker">HRMaster</p>
                             <h1>Hệ thống quản lý nhân sự</h1>
                         </div>
                     </div>
