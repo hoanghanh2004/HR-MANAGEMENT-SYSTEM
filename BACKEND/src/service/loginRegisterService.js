@@ -59,7 +59,7 @@ const registerNewUser = async (rawUserData) => {
       username: rawUserData.username,
       password: hashPassword,
       phone: rawUserData.phone,
-      groupId: 4,
+      groupId: process.env.DEFAULT_GROUP_ID || 4,
     });
     return {
       EM: "A user is created successfully ",
