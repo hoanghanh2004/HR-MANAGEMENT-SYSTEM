@@ -1,0 +1,529 @@
+// AdminLayout.scss - Thiết kế khung quản trị chuyên nghiệp (Aura HR Theme)
+
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f8fafc;
+    color: #1e293b;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    position: relative;
+
+    // ----------------------------------------------------
+    // Backdrop mờ khi mở Sidebar trên Mobile / Tablet
+    // ----------------------------------------------------
+    .admin-sidebar-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 1040;
+        transition: opacity 0.25s ease;
+    }
+
+    // ----------------------------------------------------
+    // Sidebar dọc bên trái
+    // ----------------------------------------------------
+    .admin-sidebar {
+        width: 260px;
+        background: #0f172a; // Slate 900
+        color: #94a3b8;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1050;
+        border-right: 1px solid rgba(255, 255, 255, 0.07);
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow-y: auto;
+        overflow-x: hidden;
+
+        &::-webkit-scrollbar {
+            width: 4px;
+        }
+        &::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+        }
+
+        // Header của Sidebar (Logo, Tên hệ thống, Nút thu gọn)
+        .admin-sidebar-header {
+            height: 64px;
+            padding: 0 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+            .admin-brand {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                text-decoration: none;
+
+                .brand-logo-badge {
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 10px;
+                    background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+                    color: #ffffff;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: 800;
+                    font-size: 15px;
+                    letter-spacing: -0.5px;
+                    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.35);
+                    flex-shrink: 0;
+                }
+
+                .brand-info {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    white-space: nowrap;
+
+                    .brand-name {
+                        color: #ffffff;
+                        font-weight: 700;
+                        font-size: 18px;
+                        letter-spacing: -0.3px;
+                    }
+
+                    .brand-badge {
+                        background: rgba(79, 70, 229, 0.25);
+                        color: #c7d2fe;
+                        border: 1px solid rgba(79, 70, 229, 0.4);
+                        font-size: 10px;
+                        font-weight: 600;
+                        padding: 1px 7px;
+                        border-radius: 9999px;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                    }
+                }
+            }
+
+            .btn-collapse-toggle {
+                background: transparent;
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                color: #94a3b8;
+                width: 28px;
+                height: 28px;
+                border-radius: 6px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.2s;
+                font-size: 11px;
+
+                &:hover {
+                    background: rgba(255, 255, 255, 0.08);
+                    color: #ffffff;
+                    border-color: rgba(255, 255, 255, 0.25);
+                }
+            }
+        }
+
+        // Danh mục menu Sidebar
+        .admin-sidebar-nav {
+            padding: 18px 12px;
+            flex: 1;
+
+            .nav-section-title {
+                color: #64748b;
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 0.8px;
+                padding: 0 10px 8px;
+                white-space: nowrap;
+            }
+
+            .nav-list {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+
+                .nav-item {
+                    .nav-link-item {
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                        padding: 10px 14px;
+                        border-radius: 8px;
+                        color: #94a3b8;
+                        text-decoration: none;
+                        font-size: 14px;
+                        font-weight: 500;
+                        transition: all 0.2s ease;
+                        white-space: nowrap;
+
+                        .nav-item-icon {
+                            font-size: 17px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            min-width: 22px;
+                            color: #94a3b8;
+                            transition: color 0.2s ease;
+                        }
+
+                        .nav-item-label {
+                            flex: 1;
+                        }
+
+                        &:hover:not(.disabled) {
+                            background: rgba(255, 255, 255, 0.06);
+                            color: #f1f5f9;
+
+                            .nav-item-icon {
+                                color: #ffffff;
+                            }
+                        }
+
+                        // Trạng thái active khi đúng route
+                        &.active {
+                            background: #4f46e5; // Indigo primary
+                            color: #ffffff;
+                            font-weight: 600;
+                            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+
+                            .nav-item-icon {
+                                color: #ffffff;
+                            }
+                        }
+
+                        // Trạng thái tính năng chưa triển khai
+                        &.disabled {
+                            color: #475569;
+                            cursor: not-allowed;
+                            opacity: 0.75;
+
+                            .nav-item-icon {
+                                color: #475569;
+                            }
+
+                            .badge-coming-soon {
+                                font-size: 10px;
+                                background: rgba(255, 255, 255, 0.05);
+                                color: #64748b;
+                                border: 1px solid rgba(255, 255, 255, 0.08);
+                                padding: 1px 6px;
+                                border-radius: 4px;
+                                margin-left: auto;
+                            }
+
+                            &:hover {
+                                background: transparent;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Chân Sidebar (User profile & Nút Đăng xuất)
+        .admin-sidebar-footer {
+            padding: 14px 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+
+            .user-profile-card {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 6px 8px;
+                border-radius: 8px;
+                background: rgba(255, 255, 255, 0.03);
+
+                .user-avatar {
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 8px;
+                    background: #1e293b;
+                    border: 1px solid rgba(255, 255, 255, 0.12);
+                    color: #38bdf8;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: 700;
+                    font-size: 13px;
+                    flex-shrink: 0;
+                }
+
+                .user-details {
+                    display: flex;
+                    flex-direction: column;
+                    min-width: 0;
+                    overflow: hidden;
+
+                    .user-name {
+                        color: #f1f5f9;
+                        font-weight: 600;
+                        font-size: 13px;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+
+                    .user-role-badge {
+                        color: #38bdf8;
+                        font-size: 11px;
+                        font-weight: 500;
+                        white-space: nowrap;
+                    }
+
+                    .user-email {
+                        color: #64748b;
+                        font-size: 11px;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+                }
+            }
+
+            .btn-admin-logout {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                padding: 9px 12px;
+                border-radius: 6px;
+                border: 1px solid rgba(239, 68, 68, 0.3);
+                background: rgba(239, 68, 68, 0.1);
+                color: #fca5a5;
+                font-size: 13px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.2s ease;
+
+                &:hover {
+                    background: #dc2626;
+                    color: #ffffff;
+                    border-color: #dc2626;
+                }
+            }
+        }
+    }
+
+    // ----------------------------------------------------
+    // Khu vực nội dung bên phải (Main Wrapper)
+    // ----------------------------------------------------
+    .admin-main-wrapper {
+        flex: 1;
+        margin-left: 260px;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+        // Header trên cùng của trang quản trị
+        .admin-top-header {
+            height: 64px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1020;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+
+            .header-left {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+
+                .btn-mobile-menu {
+                    background: transparent;
+                    border: 1px solid #cbd5e1;
+                    color: #334155;
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 8px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    font-size: 16px;
+
+                    &:hover {
+                        background: #f1f5f9;
+                    }
+                }
+
+                .header-breadcrumb {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    font-size: 14px;
+
+                    .breadcrumb-root {
+                        color: #64748b;
+                    }
+
+                    .breadcrumb-separator {
+                        color: #94a3b8;
+                    }
+
+                    .breadcrumb-current {
+                        color: #0f172a;
+                        font-weight: 600;
+                    }
+                }
+            }
+
+            .header-right {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+
+                .btn-return-home {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    padding: 6px 12px;
+                    border-radius: 6px;
+                    border: 1px solid #cbd5e1;
+                    background: #ffffff;
+                    color: #334155;
+                    font-size: 13px;
+                    font-weight: 500;
+                    text-decoration: none;
+                    transition: all 0.2s ease;
+
+                    &:hover {
+                        background: #f8fafc;
+                        border-color: #94a3b8;
+                        color: #0f172a;
+                    }
+                }
+
+                .user-quick-greeting {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    font-size: 13px;
+                    color: #475569;
+
+                    strong {
+                        color: #0f172a;
+                    }
+
+                    .badge-group {
+                        background: #ede9fe;
+                        color: #6d28d9;
+                        border: 1px solid #ddd6fe;
+                        font-size: 11px;
+                        font-weight: 600;
+                        padding: 2px 8px;
+                        border-radius: 9999px;
+                    }
+                }
+            }
+        }
+
+        // Thân trang render nội dung
+        .admin-content-body {
+            flex: 1;
+            padding: 20px 24px 40px;
+            overflow-x: auto;
+        }
+    }
+
+    // ----------------------------------------------------
+    // Trạng thái thu gọn Sidebar trên Desktop (Collapsed)
+    // ----------------------------------------------------
+    &.sidebar-collapsed {
+        .admin-sidebar {
+            width: 78px;
+
+            .admin-sidebar-header {
+                padding: 0 12px;
+                justify-content: center;
+
+                .admin-brand {
+                    justify-content: center;
+                }
+
+                .btn-collapse-toggle {
+                    display: none !important; // Ẩn nút bên trong header khi thu nhỏ để không bị chật
+                }
+            }
+
+            .admin-sidebar-nav {
+                padding: 16px 8px;
+
+                .nav-section-title {
+                    text-align: center;
+                    font-size: 10px;
+                    padding: 0 0 6px;
+                }
+
+                .nav-list {
+                    .nav-item {
+                        .nav-link-item {
+                            padding: 10px;
+                            justify-content: center;
+
+                            .nav-item-icon {
+                                font-size: 19px;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .admin-sidebar-footer {
+                padding: 12px 8px;
+
+                .user-profile-card {
+                    justify-content: center;
+                    padding: 6px 0;
+                }
+
+                .btn-admin-logout {
+                    padding: 8px 0;
+                    justify-content: center;
+                }
+            }
+        }
+
+        .admin-main-wrapper {
+            margin-left: 78px;
+        }
+    }
+
+    // ----------------------------------------------------
+    // Responsive cho Tablet & Mobile (< 992px)
+    // ----------------------------------------------------
+    @media (max-width: 991.98px) {
+        .admin-sidebar {
+            transform: translateX(-100%);
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+
+            &.mobile-open {
+                transform: translateX(0);
+            }
+        }
+
+        .admin-main-wrapper {
+            margin-left: 0 !important;
+        }
+    }
+}
+

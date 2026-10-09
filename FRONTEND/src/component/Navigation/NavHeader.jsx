@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import './Nav.scss';
-import { NavLink, Redirect, useLocation } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
@@ -27,7 +27,7 @@ const NavHeader = () => {
             toast.error(data.EM);
         }
     };
-    if ((user && user.isAuthenticated === true) || location.pathname === '/') {
+    if (location.pathname === '/') {
         return (
             <>
                 {/* <div className="topnav">
