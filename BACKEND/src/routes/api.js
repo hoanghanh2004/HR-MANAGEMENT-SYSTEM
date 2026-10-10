@@ -3,6 +3,7 @@ import apiController from "../controller/apiController";
 import userController from "../controller/userController";
 import groupController from "../controller/groupController";
 import roleController from "../controller/roleController";
+import departmentController from "../controller/departmentController";
 import { checkUserJWT, checkUserPermission } from "../middleware/JWTAction";
 const router = express.Router();
 /**
@@ -45,6 +46,13 @@ const initAPIRoutes = (app) => {
   router.delete("/role/delete", roleController.deleteFunc);
   router.get("/role/by-group/:groupId", roleController.getRoleByGroup);
   router.post("/role/assign-to-group", roleController.assignRoleToGroup);
+
+  //department routes
+  router.get("/department/read", departmentController.readFunc);
+  router.post("/department/create", departmentController.createFunc);
+  router.put("/department/update", departmentController.updateFunc);
+  router.delete("/department/delete", departmentController.deleteFunc);
+
   //group routes
   router.get("/group/read", groupController.readFunc);
   return app.use("/api/v1/", router);
