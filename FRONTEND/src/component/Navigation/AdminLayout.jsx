@@ -85,15 +85,16 @@ const AdminLayout = ({ children }) => {
             shortLabel: 'Group Roles',
             icon: FaUserShield,
         },
+        {
+            path: '/departments',
+            label: 'Quản lý Phòng ban',
+            shortLabel: 'Phòng ban',
+            icon: FaBuilding,
+        },
     ];
 
     // Danh sách tính năng dự kiến giai đoạn tiếp theo (chưa có route - không tạo route giả)
     const comingSoonItems = [
-        {
-            label: 'Quản lý Phòng ban',
-            icon: FaBuilding,
-            badge: 'Chưa triển khai',
-        },
         {
             label: 'Quản lý Dự án',
             icon: FaDiagramProject,
@@ -123,6 +124,11 @@ const AdminLayout = ({ children }) => {
                 return {
                     title: 'Phân quyền theo Nhóm (Group Roles)',
                     subtitle: 'Gán vai trò và quyền truy cập cho từng nhóm người dùng',
+                };
+            case '/departments':
+                return {
+                    title: 'Quản lý Phòng ban',
+                    subtitle: 'Danh sách và thông tin phòng ban trong hệ thống',
                 };
             default:
                 return {
@@ -308,4 +314,3 @@ const AdminLayout = ({ children }) => {
 };
 
 export default AdminLayout;
-
