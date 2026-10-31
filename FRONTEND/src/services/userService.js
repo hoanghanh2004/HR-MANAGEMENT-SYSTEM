@@ -35,6 +35,13 @@ const createNewUser = (userData) => {
 const updateCurrentUser = (userData) => {
     return axios.put('/api/v1/user/update', { ...userData });
 };
+const uploadUserAvatar = (formData) => {
+    return axios.post('/api/v1/user/upload-avatar', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+};
 const getUserAccount = () => {
     return axios.get('/api/v1/account');
 };
@@ -49,6 +56,7 @@ export {
     fetchGroup,
     createNewUser,
     updateCurrentUser,
+    uploadUserAvatar,
     getUserAccount,
     logoutUser,
 };

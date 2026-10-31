@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       User.belongsTo(models.Group);
       User.belongsToMany(models.Project, { through: "Project_User" });
+      User.belongsTo(models.Department, { foreignKey: "departmentId" });
     } 
   }
   User.init(
@@ -23,6 +24,14 @@ module.exports = (sequelize, DataTypes) => {
       sex: DataTypes.STRING,
       phone: DataTypes.STRING,
       groupId: DataTypes.INTEGER,
+      departmentId: DataTypes.INTEGER,
+      jobTitle: DataTypes.STRING,
+      hireDate: DataTypes.DATEONLY,
+      employmentStatus: {
+        type: DataTypes.STRING,
+        defaultValue: "ACTIVE",
+      },
+      avatar: DataTypes.STRING,
     },
     {
       sequelize,

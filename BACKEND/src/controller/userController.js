@@ -96,10 +96,37 @@ const getUserAccount = async (req, res) => {
     },
   });
 };
+const uploadAvatarFunc = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        EM: "Vui lòng chọn file ảnh để tải lên !",
+        EC: 1,
+        DT: "",
+      });
+    }
+    const avatarUrl = `/images/avatars/${req.file.filename}`;
+    return res.status(200).json({
+      EM: "Upload avatar thành công!",
+      EC: 0,
+      DT: {
+        avatarUrl: avatarUrl,
+      },
+    });
+  } catch (error) {
+    console.log("uploadAvatarFunc error:", error);
+    return res.status(500).json({
+      EM: "error from server",
+      EC: "-1",
+      DT: "",
+    });
+  }
+};
 module.exports = {
   readFunc,
   createFunc,
   updateFunc,
   deleteFunc,
   getUserAccount,
+  uploadAvatarFunc,
 };

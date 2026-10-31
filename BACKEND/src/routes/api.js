@@ -5,6 +5,7 @@ import groupController from "../controller/groupController";
 import roleController from "../controller/roleController";
 import departmentController from "../controller/departmentController";
 import { checkUserJWT, checkUserPermission } from "../middleware/JWTAction";
+import { handleAvatarUpload } from "../middleware/uploadMiddleware";
 const router = express.Router();
 /**
  *
@@ -38,6 +39,11 @@ const initAPIRoutes = (app) => {
   router.post("/user/create", userController.createFunc);
   router.put("/user/update", userController.updateFunc);
   router.delete("/user/delete", userController.deleteFunc);
+  router.post(
+    "/user/upload-avatar",
+    handleAvatarUpload,
+    userController.uploadAvatarFunc
+  );
 
   //roles routes
   router.get("/role/read", roleController.readFunc);
