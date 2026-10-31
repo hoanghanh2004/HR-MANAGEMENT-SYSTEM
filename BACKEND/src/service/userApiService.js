@@ -1,4 +1,5 @@
 import db from "../models/index";
+import { Op } from "sequelize";
 import {
   checkEmailExist,
   checkPhoneExist,
@@ -26,6 +27,71 @@ const getAllUser = async () => {
     }
   } catch (error) {
     console.log(error);
+    return {
+      EM: "something wrong width service !",
+      EC: 1,
+      DT: [],
+    };
+  }
+};
+
+const getUserWithPagination = async (page, limit, keyword) => {
+  try {
+    let parsedPage = parseInt(page, 10);
+    let parsedLimit = parseInt(limit, 10);
+
+    if (isNaN(parsedPage) || parsedPage < 1) {
+      parsedPage = 1;
+    }
+
+    if (isNaN(parsedLimit) || parsedLimit < 1) {
+      parsedLimit = 10;
+    } else if (parsedLimit > 100) {
+      parsedLimit = 100;
+    }
+
+    let offset = (parsedPage - 1) * parsedLimit;
+
+    let whereCondition = {};
+    if (keyword !== undefined && keyword !== null) {
+      let trimmedKeyword = String(keyword).trim();
+      if (trimmedKeyword.length > 0) {
+        // Escape %, _ and \ for MySQL LIKE pattern
+        let escapedKeyword = trimmedKeyword.replace(/[%_\\]/g, "\\$&");
+        whereCondition = {
+          [Op.or]: [
+            { username: { [Op.like]: `%${escapedKeyword}%` } },
+            { email: { [Op.like]: `%${escapedKeyword}%` } },
+            { phone: { [Op.like]: `%${escapedKeyword}%` } },
+            { address: { [Op.like]: `%${escapedKeyword}%` } },
+          ],
+        };
+      }
+    }
+
+    let { count, rows } = await db.User.findAndCountAll({
+      where: whereCondition,
+      offset: offset,
+      limit: parsedLimit,
+      attributes: ["id", "username", "email", "phone", "sex", "address"],
+      include: { model: db.Group, attributes: ["name", "description", "id"] },
+      order: [["id", "ASC"]],
+      distinct: true,
+    });
+
+    let totalPages = count > 0 ? Math.ceil(count / parsedLimit) : 0;
+
+    return {
+      EM: "Get users with pagination success",
+      EC: 0,
+      DT: {
+        totalRows: count,
+        totalPages: totalPages,
+        users: rows,
+      },
+    };
+  } catch (error) {
+    console.log("getUserWithPagination error:", error);
     return {
       EM: "something wrong width service !",
       EC: 1,
@@ -141,6 +207,7 @@ const deleteUser = async (id) => {
 };
 module.exports = {
   getAllUser,
+  getUserWithPagination,
   createUser,
   updateUser,
   deleteUser,

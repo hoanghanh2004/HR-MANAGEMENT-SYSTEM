@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { fetchAllUser, deleteUser, fetchGroup } from '../../services/userService';
 import { toast } from 'react-toastify';
 import ModalDelete from './ModalDelete.js';
@@ -26,11 +26,14 @@ const Users = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
 
-    // Client-side search and filtering
+    // Server-side search and pagination states
     const [searchTerm, setSearchTerm] = useState('');
+    const [debouncedKeyword, setDebouncedKeyword] = useState('');
     const [selectedGroup, setSelectedGroup] = useState('ALL');
     const [currentPage, setCurrentPage] = useState(1);
-    const pageSize = 10;
+    const [pageSize, setPageSize] = useState(10);
+    const [totalRows, setTotalRows] = useState(0);
+    const [totalPages, setTotalPages] = useState(1);
 
     // Row selection (checkbox)
     const [selectedIds, setSelectedIds] = useState([]);
@@ -44,17 +47,81 @@ const Users = () => {
     const [actionModalUser, setActionModalUser] = useState('CREATE');
     const [dataModalUser, setDataModalUser] = useState({});
 
+    // Debounce từ khóa tìm kiếm (400ms) để tránh gửi request dồn dập
     useEffect(() => {
-        fetchUsers();
+        const timer = setTimeout(() => {
+            setDebouncedKeyword(searchTerm.trim());
+        }, 400);
+        return () => {
+            clearTimeout(timer);
+        };
+    }, [searchTerm]);
+
+    // Tải danh mục nhóm quyền 1 lần khi component mount
+    useEffect(() => {
         loadGroups();
     }, []);
+
+    // Tự động tải lại danh sách khi trang, số bản ghi hoặc từ khóa tìm kiếm thay đổi
+    useEffect(() => {
+        let isCurrent = true;
+
+        const loadData = async () => {
+            setIsLoading(true);
+            try {
+                let response = await fetchAllUser(currentPage, pageSize, debouncedKeyword);
+                if (!isCurrent) return; // Bỏ qua nếu effect đã bị hủy (tránh race condition)
+
+                if (response && response.EC === 0) {
+                    if (response.DT && Array.isArray(response.DT.users)) {
+                        setListUsers(response.DT.users);
+                        setTotalRows(response.DT.totalRows || 0);
+                        setTotalPages(response.DT.totalPages || 1);
+                    } else if (Array.isArray(response.DT)) {
+                        // Tương thích ngược nếu API trả về mảng cũ
+                        setListUsers(response.DT);
+                        setTotalRows(response.DT.length);
+                        setTotalPages(Math.ceil(response.DT.length / pageSize) || 1);
+                    } else {
+                        setListUsers([]);
+                        setTotalRows(0);
+                        setTotalPages(1);
+                    }
+                } else {
+                    toast.error(response?.EM || 'Không thể tải danh sách người dùng!');
+                }
+            } catch (error) {
+                if (!isCurrent) return;
+                console.error('Fetch users error:', error);
+                toast.error('Lỗi kết nối khi tải danh sách người dùng!');
+            } finally {
+                if (isCurrent) {
+                    setIsLoading(false);
+                }
+            }
+        };
+
+        loadData();
+
+        return () => {
+            isCurrent = false; // Đánh dấu không cập nhật nếu request cũ về muộn
+        };
+    }, [currentPage, pageSize, debouncedKeyword]);
 
     const fetchUsers = async () => {
         setIsLoading(true);
         try {
-            let response = await fetchAllUser();
+            let response = await fetchAllUser(currentPage, pageSize, debouncedKeyword);
             if (response && response.EC === 0) {
-                setListUsers(response.DT || []);
+                if (response.DT && Array.isArray(response.DT.users)) {
+                    setListUsers(response.DT.users);
+                    setTotalRows(response.DT.totalRows || 0);
+                    setTotalPages(response.DT.totalPages || 1);
+                } else if (Array.isArray(response.DT)) {
+                    setListUsers(response.DT);
+                    setTotalRows(response.DT.length);
+                    setTotalPages(Math.ceil(response.DT.length / pageSize) || 1);
+                }
             } else {
                 toast.error(response?.EM || 'Không thể tải danh sách người dùng!');
             }
@@ -93,9 +160,15 @@ const Users = () => {
             let response = await deleteUser(dataModal);
             if (response && response.EC === 0) {
                 toast.success(response.EM || 'Xóa người dùng thành công!');
-                await fetchUsers();
                 setIsShowModalDelete(false);
                 setSelectedIds((prev) => prev.filter((id) => id !== dataModal.id));
+
+                // Nếu xóa bản ghi duy nhất trên trang hiện tại và không phải trang 1 -> lùi 1 trang
+                if (listUsers.length === 1 && currentPage > 1) {
+                    setCurrentPage((prev) => Math.max(1, prev - 1));
+                } else {
+                    await fetchUsers();
+                }
             } else {
                 toast.error(response?.EM || 'Xóa người dùng thất bại!');
             }
@@ -131,50 +204,34 @@ const Users = () => {
 
     const handleResetFilters = () => {
         setSearchTerm('');
+        setDebouncedKeyword('');
         setSelectedGroup('ALL');
         setCurrentPage(1);
     };
 
-    // Lọc danh sách người dùng phía Client
-    const filteredUsers = useMemo(() => {
-        return listUsers.filter((user) => {
-            const term = searchTerm.trim().toLowerCase();
-            const matchSearch =
-                !term ||
-                String(user.id).includes(term) ||
-                (user.username && user.username.toLowerCase().includes(term)) ||
-                (user.email && user.email.toLowerCase().includes(term)) ||
-                (user.address && user.address.toLowerCase().includes(term));
+    const handleGroupChange = (e) => {
+        const val = e.target.value;
+        if (val !== 'ALL') {
+            toast.info(
+                'Lọc theo nhóm quyền đang chờ Backend hỗ trợ tham số groupId kèm phân trang. Hiện tại đang hiển thị toàn bộ người dùng.'
+            );
+        }
+        setSelectedGroup('ALL');
+    };
 
-            const matchGroup =
-                selectedGroup === 'ALL' ||
-                (user.Group && String(user.Group.id) === String(selectedGroup)) ||
-                (user.Group && user.Group.name === selectedGroup);
-
-            return matchSearch && matchGroup;
-        });
-    }, [listUsers, searchTerm, selectedGroup]);
-
-    // Phân trang phía Client
-    const totalPages = Math.ceil(filteredUsers.length / pageSize) || 1;
-    const paginatedUsers = useMemo(() => {
-        const startIndex = (currentPage - 1) * pageSize;
-        return filteredUsers.slice(startIndex, startIndex + pageSize);
-    }, [filteredUsers, currentPage, pageSize]);
-
-    // Xử lý chọn hàng loạt checkbox
+    // Xử lý chọn hàng loạt checkbox trên trang hiện tại
     const isAllSelected =
-        paginatedUsers.length > 0 &&
-        paginatedUsers.every((u) => selectedIds.includes(u.id));
+        listUsers.length > 0 &&
+        listUsers.every((u) => selectedIds.includes(u.id));
 
     const handleSelectAll = (e) => {
         if (e.target.checked) {
             const newIds = Array.from(
-                new Set([...selectedIds, ...paginatedUsers.map((u) => u.id)])
+                new Set([...selectedIds, ...listUsers.map((u) => u.id)])
             );
             setSelectedIds(newIds);
         } else {
-            const pageIds = paginatedUsers.map((u) => u.id);
+            const pageIds = listUsers.map((u) => u.id);
             setSelectedIds(selectedIds.filter((id) => !pageIds.includes(id)));
         }
     };
@@ -215,6 +272,33 @@ const Users = () => {
             default:
                 return 'badge-group-default';
         }
+    };
+
+    // Helper tạo danh sách số trang hiển thị
+    const getPageNumbers = () => {
+        if (totalPages <= 1) return [1];
+        if (totalPages <= 7) {
+            return Array.from({ length: totalPages }, (_, i) => i + 1);
+        }
+        const pages = [];
+        if (currentPage <= 4) {
+            for (let i = 1; i <= 5; i++) pages.push(i);
+            pages.push('...');
+            pages.push(totalPages);
+        } else if (currentPage >= totalPages - 3) {
+            pages.push(1);
+            pages.push('...');
+            for (let i = totalPages - 4; i <= totalPages; i++) pages.push(i);
+        } else {
+            pages.push(1);
+            pages.push('...');
+            pages.push(currentPage - 1);
+            pages.push(currentPage);
+            pages.push(currentPage + 1);
+            pages.push('...');
+            pages.push(totalPages);
+        }
+        return pages;
     };
 
     return (
@@ -270,20 +354,20 @@ const Users = () => {
 
             {/* 2. KPI Metric Cards Grid */}
             <div className="users-kpi-grid">
-                {/* Metric 1: Tổng người dùng đã tải */}
+                {/* Metric 1: Tổng người dùng (từ Database) */}
                 <div className="kpi-card">
                     <div className="kpi-header">
-                        <span className="kpi-label">Tổng người dùng đã tải</span>
+                        <span className="kpi-label">Tổng người dùng</span>
                         <div className="kpi-icon-wrap icon-primary">
                             <FaUsers />
                         </div>
                     </div>
                     <div className="kpi-value-row">
-                        <span className="kpi-value">{totalLoaded}</span>
-                        <span className="kpi-tag tag-success">Đã đồng bộ</span>
+                        <span className="kpi-value">{totalRows}</span>
+                        <span className="kpi-tag tag-success">Toàn bộ DB</span>
                     </div>
                     <div className="kpi-footer">
-                        <span className="kpi-subtext">Danh sách bản ghi hiện có từ Database</span>
+                        <span className="kpi-subtext">Tổng số bản ghi từ Database</span>
                     </div>
                 </div>
 
@@ -350,7 +434,7 @@ const Users = () => {
                         <input
                             type="text"
                             className="search-input"
-                            placeholder="Tìm theo ID, Tên, Email, Địa chỉ..."
+                            placeholder="Tìm theo Tên, Email, Số điện thoại, Địa chỉ..."
                             value={searchTerm}
                             onChange={(e) => {
                                 setSearchTerm(e.target.value);
@@ -364,10 +448,7 @@ const Users = () => {
                         <select
                             className="filter-select"
                             value={selectedGroup}
-                            onChange={(e) => {
-                                setSelectedGroup(e.target.value);
-                                setCurrentPage(1);
-                            }}
+                            onChange={handleGroupChange}
                         >
                             <option value="ALL">Tất cả nhóm quyền</option>
                             {userGroups.map((group) => (
@@ -402,7 +483,7 @@ const Users = () => {
                         </button>
                     )}
                     <span className="record-counter">
-                        Đang hiển thị {filteredUsers.length} / {totalLoaded} bản ghi
+                        Đang hiển thị {listUsers.length} / {totalRows} bản ghi
                     </span>
                 </div>
             </div>
@@ -441,8 +522,8 @@ const Users = () => {
                                         </div>
                                     </td>
                                 </tr>
-                            ) : paginatedUsers && paginatedUsers.length > 0 ? (
-                                paginatedUsers.map((item) => {
+                            ) : listUsers && listUsers.length > 0 ? (
+                                listUsers.map((item) => {
                                     const isChecked = selectedIds.includes(item.id);
                                     return (
                                         <tr
@@ -531,11 +612,11 @@ const Users = () => {
                                         <div className="empty-state-wrap">
                                             <p className="empty-title">Không tìm thấy người dùng phù hợp</p>
                                             <p className="empty-desc">
-                                                {searchTerm || selectedGroup !== 'ALL'
-                                                    ? 'Thử thay đổi từ khóa tìm kiếm hoặc bỏ chọn bộ lọc nhóm.'
+                                                {searchTerm
+                                                    ? 'Thử thay đổi từ khóa tìm kiếm (tên, email, số điện thoại, địa chỉ).'
                                                     : 'Hệ thống hiện chưa có bản ghi người dùng nào.'}
                                             </p>
-                                            {(searchTerm || selectedGroup !== 'ALL') && (
+                                            {searchTerm && (
                                                 <button
                                                     className="btn-reset-filters mt-2"
                                                     onClick={handleResetFilters}
@@ -555,22 +636,47 @@ const Users = () => {
                 {/* 5. Pagination Footer */}
                 <div className="table-pagination-footer">
                     <div className="pagination-info">
-                        Hiển thị{' '}
-                        <strong className="text-highlight">
-                            {filteredUsers.length > 0
-                                ? (currentPage - 1) * pageSize + 1
-                                : 0}
-                            {' '}-{' '}
-                            {Math.min(currentPage * pageSize, filteredUsers.length)}
-                        </strong>{' '}
-                        trên tổng số{' '}
-                        <strong className="text-highlight">{filteredUsers.length}</strong> bản ghi
+                        <span>
+                            Hiển thị{' '}
+                            <strong className="text-highlight">
+                                {totalRows > 0 ? (currentPage - 1) * pageSize + 1 : 0}
+                                {' '}-{' '}
+                                {Math.min(currentPage * pageSize, totalRows)}
+                            </strong>{' '}
+                            trên tổng số{' '}
+                            <strong className="text-highlight">{totalRows}</strong> bản ghi
+                        </span>
+                        <span style={{ marginLeft: '12px' }}>
+                            Số dòng/trang:{' '}
+                            <select
+                                value={pageSize}
+                                onChange={(e) => {
+                                    setPageSize(Number(e.target.value));
+                                    setCurrentPage(1);
+                                }}
+                                disabled={isLoading}
+                                style={{
+                                    padding: '2px 6px',
+                                    borderRadius: '4px',
+                                    border: '1px solid #cbd5e1',
+                                    background: '#ffffff',
+                                    fontSize: '12px',
+                                    cursor: 'pointer',
+                                    outline: 'none',
+                                }}
+                            >
+                                <option value={5}>5</option>
+                                <option value={10}>10</option>
+                                <option value={20}>20</option>
+                                <option value={50}>50</option>
+                            </select>
+                        </span>
                     </div>
 
                     <div className="pagination-controls">
                         <button
                             className="btn-page-nav"
-                            disabled={currentPage <= 1}
+                            disabled={currentPage <= 1 || isLoading}
                             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                             title="Trang trước"
                             type="button"
@@ -578,22 +684,40 @@ const Users = () => {
                             <FaChevronLeft />
                         </button>
 
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
-                            <button
-                                key={`page-btn-${pageNumber}`}
-                                className={`btn-page-num ${
-                                    pageNumber === currentPage ? 'active' : ''
-                                }`}
-                                onClick={() => setCurrentPage(pageNumber)}
-                                type="button"
-                            >
-                                {pageNumber}
-                            </button>
-                        ))}
+                        {getPageNumbers().map((pageItem, index) => {
+                            if (pageItem === '...') {
+                                return (
+                                    <span
+                                        key={`ellipsis-${index}`}
+                                        className="btn-page-num"
+                                        style={{
+                                            cursor: 'default',
+                                            border: 'none',
+                                            background: 'transparent',
+                                        }}
+                                    >
+                                        ...
+                                    </span>
+                                );
+                            }
+                            return (
+                                <button
+                                    key={`page-btn-${pageItem}`}
+                                    className={`btn-page-num ${
+                                        pageItem === currentPage ? 'active' : ''
+                                    }`}
+                                    disabled={isLoading}
+                                    onClick={() => setCurrentPage(pageItem)}
+                                    type="button"
+                                >
+                                    {pageItem}
+                                </button>
+                            );
+                        })}
 
                         <button
                             className="btn-page-nav"
-                            disabled={currentPage >= totalPages}
+                            disabled={currentPage >= totalPages || isLoading}
                             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                             title="Trang tiếp"
                             type="button"

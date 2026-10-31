@@ -14,7 +14,12 @@ const loginUser = (valueLogin, password) => {
         password,
     });
 };
-const fetchAllUser = () => {
+const fetchAllUser = (page, limit, keyword) => {
+    if (page !== undefined && limit !== undefined) {
+        return axios.get(
+            `/api/v1/user/read?page=${page}&limit=${limit}&keyword=${encodeURIComponent(keyword || '')}`
+        );
+    }
     return axios.get(`/api/v1/user/read`);
 };
 const deleteUser = (user) => {
