@@ -18,6 +18,11 @@ module.exports = (sequelize, DataTypes) => {
       name: DataTypes.STRING,
       description: DataTypes.STRING,
       startDate: DataTypes.STRING,
+      endDate: DataTypes.STRING,
+      status: {
+        type: DataTypes.STRING,
+        defaultValue: "PLANNING",
+      },
       customerId: DataTypes.INTEGER,
     },
     {

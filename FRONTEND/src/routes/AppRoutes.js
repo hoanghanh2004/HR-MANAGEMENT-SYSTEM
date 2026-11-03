@@ -7,11 +7,13 @@ import roles from '../component/Role/Role';
 import GroupRole from '../component/GroupRole/GroupRole';
 import HomePage from '../component/HomePage/HomePage';
 import Departments from '../component/ManageDepartments/Departments';
+import Projects from '../component/ManageProjects/Projects';
 const AppRoutes = () => {
     return (
         <>
             <Switch>
-                {/* <Route path="/project">project</Route> */}
+                <PrivateRoutes path="/projects" component={Projects} />
+                <PrivateRoutes path="/project" component={Projects} />
                 <PrivateRoutes path="/users" component={Users} />
                 <PrivateRoutes path="/roles" component={roles} />
                 <PrivateRoutes path="/group-role" component={GroupRole} />

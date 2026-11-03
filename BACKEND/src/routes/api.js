@@ -4,6 +4,7 @@ import userController from "../controller/userController";
 import groupController from "../controller/groupController";
 import roleController from "../controller/roleController";
 import departmentController from "../controller/departmentController";
+import projectController from "../controller/projectController";
 import { checkUserJWT, checkUserPermission } from "../middleware/JWTAction";
 import { handleAvatarUpload } from "../middleware/uploadMiddleware";
 const router = express.Router();
@@ -58,6 +59,12 @@ const initAPIRoutes = (app) => {
   router.post("/department/create", departmentController.createFunc);
   router.put("/department/update", departmentController.updateFunc);
   router.delete("/department/delete", departmentController.deleteFunc);
+
+  //project routes
+  router.get("/project/read", projectController.readFunc);
+  router.post("/project/create", projectController.createFunc);
+  router.put("/project/update", projectController.updateFunc);
+  router.delete("/project/delete", projectController.deleteFunc);
 
   //group routes
   router.get("/group/read", groupController.readFunc);

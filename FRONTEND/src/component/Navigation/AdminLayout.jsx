@@ -91,15 +91,16 @@ const AdminLayout = ({ children }) => {
             shortLabel: 'Phòng ban',
             icon: FaBuilding,
         },
+        {
+            path: '/projects',
+            label: 'Quản lý Dự án',
+            shortLabel: 'Dự án',
+            icon: FaDiagramProject,
+        },
     ];
 
     // Danh sách tính năng dự kiến giai đoạn tiếp theo (chưa có route - không tạo route giả)
     const comingSoonItems = [
-        {
-            label: 'Quản lý Dự án',
-            icon: FaDiagramProject,
-            badge: 'Chưa triển khai',
-        },
         {
             label: 'Hồ sơ cá nhân',
             icon: FaCircleUser,
@@ -110,6 +111,12 @@ const AdminLayout = ({ children }) => {
     // Xác định tiêu đề hiển thị trên header theo route hiện tại
     const getPageMeta = (pathname) => {
         switch (pathname) {
+            case '/projects':
+            case '/project':
+                return {
+                    title: 'Quản lý Dự Án',
+                    subtitle: 'Danh mục, tiến độ và kế hoạch các dự án trong doanh nghiệp',
+                };
             case '/users':
                 return {
                     title: 'Quản lý Người Dùng',
