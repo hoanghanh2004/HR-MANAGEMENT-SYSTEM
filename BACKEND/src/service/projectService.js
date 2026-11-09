@@ -319,10 +319,372 @@ const deleteProject = async (id) => {
   }
 };
 
+const getProjectMembers = async (rawProjectId) => {
+  const projectId = Number(rawProjectId);
+  if (!Number.isInteger(projectId) || projectId <= 0) {
+    return {
+      EM: "Mã dự án không hợp lệ",
+      EC: 1,
+      DT: [],
+    };
+  }
+
+  try {
+    const project = await db.Project.findByPk(projectId);
+    if (!project) {
+      return {
+        EM: "Dự án không tồn tại",
+        EC: 2,
+        DT: [],
+      };
+    }
+
+    const assignments = await db.Project_User.findAll({
+      where: { projectId },
+      include: [
+        {
+          model: db.User,
+          attributes: [
+            "id",
+            "username",
+            "email",
+            "phone",
+            "sex",
+            "jobTitle",
+            "avatar",
+            "departmentId",
+            "employmentStatus",
+          ],
+          include: [
+            {
+              model: db.Department,
+              attributes: ["id", "name"],
+            },
+          ],
+        },
+      ],
+      order: [["id", "DESC"]],
+    });
+
+    const members = assignments.map((item) => {
+      const u = item.User || {};
+      return {
+        id: u.id,
+        userId: item.userId,
+        projectId: item.projectId,
+        projectUserId: item.id,
+        username: u.username || "",
+        email: u.email || "",
+        phone: u.phone || "",
+        sex: u.sex || "",
+        jobTitle: u.jobTitle || "",
+        avatar: u.avatar || null,
+        department: u.Department ? u.Department.name : "",
+        employmentStatus: u.employmentStatus || "",
+        roleInProject: item.roleInProject || "Developer",
+        assignedAt: item.createdAt,
+      };
+    });
+
+    return {
+      EM: "Lấy danh sách thành viên dự án thành công",
+      EC: 0,
+      DT: members,
+    };
+  } catch (error) {
+    console.log("getProjectMembers error:", error);
+    return {
+      EM: "Error from service",
+      EC: 1,
+      DT: [],
+    };
+  }
+};
+
+const getAssignableUsers = async (rawProjectId) => {
+  const projectId = Number(rawProjectId);
+  if (!Number.isInteger(projectId) || projectId <= 0) {
+    return {
+      EM: "Mã dự án không hợp lệ",
+      EC: 1,
+      DT: [],
+    };
+  }
+
+  try {
+    const project = await db.Project.findByPk(projectId);
+    if (!project) {
+      return {
+        EM: "Dự án không tồn tại",
+        EC: 2,
+        DT: [],
+      };
+    }
+
+    const assigned = await db.Project_User.findAll({
+      where: { projectId },
+      attributes: ["userId"],
+    });
+
+    const assignedUserIds = assigned.map((a) => a.userId).filter(Boolean);
+
+    const whereCondition = {};
+    if (assignedUserIds.length > 0) {
+      whereCondition.id = {
+        [db.Sequelize.Op.notIn]: assignedUserIds,
+      };
+    }
+
+    const users = await db.User.findAll({
+      where: whereCondition,
+      attributes: [
+        "id",
+        "username",
+        "email",
+        "phone",
+        "sex",
+        "jobTitle",
+        "avatar",
+        "departmentId",
+        "employmentStatus",
+      ],
+      include: [
+        {
+          model: db.Department,
+          attributes: ["id", "name"],
+        },
+      ],
+      order: [["id", "DESC"]],
+    });
+
+    const formattedUsers = users.map((u) => ({
+      id: u.id,
+      username: u.username || "",
+      email: u.email || "",
+      phone: u.phone || "",
+      sex: u.sex || "",
+      jobTitle: u.jobTitle || "",
+      avatar: u.avatar || null,
+      department: u.Department ? u.Department.name : "",
+      employmentStatus: u.employmentStatus || "",
+    }));
+
+    return {
+      EM: "Lấy danh sách nhân viên có thể phân công thành công",
+      EC: 0,
+      DT: formattedUsers,
+    };
+  } catch (error) {
+    console.log("getAssignableUsers error:", error);
+    return {
+      EM: "Error from service",
+      EC: 1,
+      DT: [],
+    };
+  }
+};
+
+const assignUserToProject = async (data) => {
+  const projectId = Number(data && data.projectId);
+  const userId = Number(data && data.userId);
+
+  if (!Number.isInteger(projectId) || projectId <= 0) {
+    return {
+      EM: "Mã dự án không hợp lệ",
+      EC: 1,
+      DT: "projectId",
+    };
+  }
+
+  if (!Number.isInteger(userId) || userId <= 0) {
+    return {
+      EM: "Vui lòng chọn nhân viên cần phân công",
+      EC: 1,
+      DT: "userId",
+    };
+  }
+
+  const roleInProject =
+    data.roleInProject !== undefined &&
+    data.roleInProject !== null &&
+    String(data.roleInProject).trim() !== ""
+      ? String(data.roleInProject).trim()
+      : "Developer";
+
+  try {
+    const project = await db.Project.findByPk(projectId);
+    if (!project) {
+      return {
+        EM: "Dự án không tồn tại",
+        EC: 2,
+        DT: "",
+      };
+    }
+
+    const user = await db.User.findByPk(userId);
+    if (!user) {
+      return {
+        EM: "Nhân viên không tồn tại",
+        EC: 2,
+        DT: "",
+      };
+    }
+
+    const existing = await db.Project_User.findOne({
+      where: { projectId, userId },
+    });
+
+    if (existing) {
+      return {
+        EM: "Nhân viên đã được phân công vào dự án này",
+        EC: 1,
+        DT: "",
+      };
+    }
+
+    const assignment = await db.Project_User.create({
+      projectId,
+      userId,
+      roleInProject,
+    });
+
+    return {
+      EM: "Phân công nhân sự vào dự án thành công",
+      EC: 0,
+      DT: assignment,
+    };
+  } catch (error) {
+    console.log("assignUserToProject error:", error);
+    return {
+      EM: "Error from service",
+      EC: 1,
+      DT: [],
+    };
+  }
+};
+
+const updateUserRoleInProject = async (data) => {
+  const projectId = Number(data && data.projectId);
+  const userId = Number(data && data.userId);
+  const projectUserId = Number(data && (data.projectUserId || data.id));
+
+  if (!data || !data.roleInProject || !String(data.roleInProject).trim()) {
+    return {
+      EM: "Vai trò trong dự án không được để trống",
+      EC: 1,
+      DT: "roleInProject",
+    };
+  }
+
+  const newRole = String(data.roleInProject).trim();
+
+  try {
+    let assignment = null;
+    if (Number.isInteger(projectUserId) && projectUserId > 0) {
+      assignment = await db.Project_User.findByPk(projectUserId);
+    } else if (
+      Number.isInteger(projectId) &&
+      projectId > 0 &&
+      Number.isInteger(userId) &&
+      userId > 0
+    ) {
+      assignment = await db.Project_User.findOne({
+        where: { projectId, userId },
+      });
+    } else {
+      return {
+        EM: "Thiếu thông tin phân công cần cập nhật",
+        EC: 1,
+        DT: "",
+      };
+    }
+
+    if (!assignment) {
+      return {
+        EM: "Không tìm thấy thông tin phân công nhân viên trong dự án",
+        EC: 2,
+        DT: "",
+      };
+    }
+
+    assignment.roleInProject = newRole;
+    await assignment.save();
+
+    return {
+      EM: "Cập nhật vai trò thành viên thành công",
+      EC: 0,
+      DT: assignment,
+    };
+  } catch (error) {
+    console.log("updateUserRoleInProject error:", error);
+    return {
+      EM: "Error from service",
+      EC: 1,
+      DT: [],
+    };
+  }
+};
+
+const removeUserFromProject = async (data) => {
+  const projectId = Number(data && data.projectId);
+  const userId = Number(data && data.userId);
+  const projectUserId = Number(data && (data.projectUserId || data.id));
+
+  try {
+    let assignment = null;
+    if (Number.isInteger(projectUserId) && projectUserId > 0) {
+      assignment = await db.Project_User.findByPk(projectUserId);
+    } else if (
+      Number.isInteger(projectId) &&
+      projectId > 0 &&
+      Number.isInteger(userId) &&
+      userId > 0
+    ) {
+      assignment = await db.Project_User.findOne({
+        where: { projectId, userId },
+      });
+    } else {
+      return {
+        EM: "Thiếu thông tin thành viên cần xóa khỏi dự án",
+        EC: 1,
+        DT: "",
+      };
+    }
+
+    if (!assignment) {
+      return {
+        EM: "Không tìm thấy thông tin phân công nhân viên trong dự án",
+        EC: 2,
+        DT: "",
+      };
+    }
+
+    await assignment.destroy();
+
+    return {
+      EM: "Xóa thành viên khỏi dự án thành công",
+      EC: 0,
+      DT: [],
+    };
+  } catch (error) {
+    console.log("removeUserFromProject error:", error);
+    return {
+      EM: "Error from service",
+      EC: 1,
+      DT: [],
+    };
+  }
+};
+
 module.exports = {
   getAllProjects,
   createProject,
   updateProject,
   deleteProject,
+  getProjectMembers,
+  getAssignableUsers,
+  assignUserToProject,
+  updateUserRoleInProject,
+  removeUserFromProject,
 };
 

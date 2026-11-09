@@ -13,3 +13,4 @@ module.exports = {
     await queryInterface.removeColumn("Project_User", "roleInProject");
   },
 };
+

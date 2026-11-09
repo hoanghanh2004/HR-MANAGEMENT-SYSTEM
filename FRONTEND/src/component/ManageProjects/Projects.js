@@ -9,6 +9,7 @@ import {
 } from '../../services/projectService';
 import ModalDeleteProject from './ModalDeleteProject';
 import ModalProject from './ModalProject';
+import ModalProjectMembers from './ModalProjectMembers';
 import './Projects.scss';
 import {
     FaDiagramProject,
@@ -27,6 +28,7 @@ import {
     FaCircleExclamation,
     FaFilterCircleXmark,
     FaListCheck,
+    FaUsers,
 } from 'react-icons/fa6';
 
 const PAGE_SIZE = 10;
@@ -67,6 +69,10 @@ const Projects = () => {
     // Delete modal state
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+
+    // Members modal state
+    const [showMembersModal, setShowMembersModal] = useState(false);
+    const [selectedProjectForMembers, setSelectedProjectForMembers] = useState(null);
 
     const loadProjects = useCallback(async () => {
         setIsLoading(true);
@@ -187,6 +193,11 @@ const Projects = () => {
     const openDeleteModal = (project) => {
         setSelectedProject(project);
         setIsDeleteModalOpen(true);
+    };
+
+    const openMembersModal = (project) => {
+        setSelectedProjectForMembers(project);
+        setShowMembersModal(true);
     };
 
     const handleProjectSaved = async () => {
@@ -497,7 +508,7 @@ const Projects = () => {
                                         <th style={{ width: '130px' }} className="text-center">Bắt đầu</th>
                                         <th style={{ width: '130px' }} className="text-center">Kết thúc</th>
                                         <th style={{ width: '170px' }} className="text-center">Trạng thái</th>
-                                        <th style={{ width: '120px' }} className="text-center">Thao tác</th>
+                                        <th style={{ width: '150px' }} className="text-center">Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -524,7 +535,7 @@ const Projects = () => {
                                                 <td>
                                                     <span className="project-desc text-muted" title={project.description || ''}>
                                                         {project.description || (
-                                                            <em className="text-muted-light">Không có mô tả</em>
+                                                             <em className="text-muted-light">Không có mô tả</em>
                                                         )}
                                                     </span>
                                                 </td>
@@ -539,6 +550,14 @@ const Projects = () => {
                                                 </td>
                                                 <td className="text-center">
                                                     <div className="action-buttons-group">
+                                                        <button
+                                                            type="button"
+                                                            className="btn-table-action btn-members"
+                                                            title="Quản lý thành viên dự án"
+                                                            onClick={() => openMembersModal(project)}
+                                                        >
+                                                            <FaUsers />
+                                                        </button>
                                                         <button
                                                             type="button"
                                                             className="btn-table-action btn-edit"
@@ -620,6 +639,15 @@ const Projects = () => {
                 isDeleting={isDeleting}
                 onHide={() => setIsDeleteModalOpen(false)}
                 onConfirm={handleConfirmDelete}
+            />
+
+            <ModalProjectMembers
+                show={showMembersModal}
+                project={selectedProjectForMembers}
+                onHide={() => {
+                    setShowMembersModal(false);
+                    setSelectedProjectForMembers(null);
+                }}
             />
         </section>
     );

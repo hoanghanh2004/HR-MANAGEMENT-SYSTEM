@@ -66,6 +66,13 @@ const initAPIRoutes = (app) => {
   router.put("/project/update", projectController.updateFunc);
   router.delete("/project/delete", projectController.deleteFunc);
 
+  //project assignment routes
+  router.get("/project/members", projectController.getMembersFunc);
+  router.get("/project/assignable-users", projectController.getAssignableUsersFunc);
+  router.post("/project/assign-user", projectController.assignUserFunc);
+  router.put("/project/update-user-role", projectController.updateUserRoleFunc);
+  router.delete("/project/remove-user", projectController.removeUserFunc);
+
   //group routes
   router.get("/group/read", groupController.readFunc);
   return app.use("/api/v1/", router);
